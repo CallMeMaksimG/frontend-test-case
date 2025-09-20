@@ -1,30 +1,23 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useState, useEffect, useMemo } from 'react';
-import { setLoading, setProducts } from '../store/store';
 import Filters from './Filters';
 import { ProductCard } from './ProductCard';
-import { MOCK_PRODUCTS } from '../data/mock-products.data';
 import { useDebounce } from '../hooks/useDebounce';
+import { selectLoading, selectProducts } from '../store/productsSlice';
+import { fetchProducts } from '../store/productsSlice';
 
 const ProductList = () => {
   const dispatch = useDispatch();
-
-  const products = useSelector((state) => state.app.products);
-  const loading = useSelector((state) => state.app.loading);
+  const products = useSelector(selectProducts);
+  const loading = useSelector(selectLoading);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [showFilters, setShowFilters] = useState(false);
-
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    dispatch(setLoading(true));
-
-    setTimeout(() => {
-      dispatch(setProducts(MOCK_PRODUCTS));
-      dispatch(setLoading(false));
-    }, 1000);
+    dispatch(fetchProducts());
   }, [dispatch]);
 
   const filteredProducts = useMemo(() => {
